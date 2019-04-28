@@ -1,0 +1,9 @@
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\bin\Release\GraphicProg.exe.config
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\bin\Release\GraphicProg.exe
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.Connector.resources
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.MainForm.resources
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.Properties.Resources.resources
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.csproj.GenerateResource.cache
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.csproj.CoreCompileInputs.cache
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.exe
+C:\Users\ferra\source\repos\GraphicProg\GraphicProg\obj\Release\GraphicProg.csprojAssemblyReference.cache
