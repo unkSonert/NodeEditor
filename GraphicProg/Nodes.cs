@@ -40,16 +40,56 @@ namespace GraphicProg
             switch (m_nType)
             {
                 case EType.INT:
-                    return (int) m_Value;
+                    try
+                    {
+                        m_Value = Convert.ToInt32(m_Value);
+                        return m_Value;
+                    }
+                    catch
+                    {
+                        return 0;
+                    }
                 case EType.NUMERIC:
                 case EType.FLOAT:
-                    return (float) m_Value;
+                    try
+                    {
+                        m_Value = Convert.ToSingle(m_Value);
+                        return m_Value;
+                    }
+                    catch
+                    {
+                        return .0f;
+                    }
                 case EType.BOOL:
-                    return (bool) m_Value;
+                    try
+                    {
+                        m_Value = Convert.ToBoolean(m_Value);
+                        return m_Value;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 case EType.STRING:
-                    return (string) m_Value;
+                    try
+                    {
+                        m_Value = Convert.ToString(m_Value);
+                        return m_Value;
+                    }
+                    catch
+                    {
+                        return "";
+                    }
                 default:
-                    return m_Value;
+                    try
+                    {
+                        m_Value = Convert.ToString(m_Value);
+                        return m_Value;
+                    }
+                    catch
+                    {
+                        return "";
+                    }
             }
         }
 
@@ -76,7 +116,7 @@ namespace GraphicProg
             }
         }
 
-        public bool ValidValue() => m_Value != null;
+        public bool ValidValue() => m_Value != null && m_cParentNode != null;
 
         public Data(EType type, object val, ControlNode parent)
         {
@@ -401,7 +441,15 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) + Convert.ToSingle(m_colInData[1].GetValue()));
+            try
+            {
+                m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) +
+                                         Convert.ToSingle(m_colInData[1].GetValue()));
+            }
+            catch
+            {
+                m_colOutData[0].SetValue(0);
+            }
         }
 
         public override ControlNode Copy(Point posPoint, int id = -1)
@@ -427,7 +475,15 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) - Convert.ToSingle(m_colInData[1].GetValue()));
+            try
+            {
+                m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) -
+                                         Convert.ToSingle(m_colInData[1].GetValue()));
+            }
+            catch
+            {
+                m_colOutData[0].SetValue(0);
+            }
         }
     }
 
@@ -448,7 +504,15 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) * Convert.ToSingle(m_colInData[1].GetValue()));
+            try
+            {
+                m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) *
+                                         Convert.ToSingle(m_colInData[1].GetValue()));
+            }
+            catch
+            {
+                m_colOutData[0].SetValue(0);
+            }
         }
     }
 
@@ -469,7 +533,15 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) / Convert.ToSingle(m_colInData[1].GetValue()));
+            try
+            {
+                m_colOutData[0].SetValue(Convert.ToSingle(m_colInData[0].GetValue()) /
+                                         Convert.ToSingle(m_colInData[1].GetValue()));
+            }
+            catch
+            {
+                m_colOutData[0].SetValue(0);
+            }
         }
     }
 
@@ -557,7 +629,14 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_Textbox.Text = m_colInData?[0]?.GetValue()?.ToString();
+            try
+            {
+                m_Textbox.Text = Convert.ToSingle(m_colInData?[0]?.GetValue()?.ToString()).ToString();
+            }
+            catch
+            {
+                m_Textbox.Text = "";
+            }
 
             if (m_colInData != null) return;
             m_Textbox = null;
@@ -669,7 +748,14 @@ namespace GraphicProg
 
         public override void Execute()
         {
-            m_ShowPanel.BackColor = Convert.ToBoolean(m_colInData?[0]?.GetValue()) ? Color.Green : Color.Red;
+            try
+            {
+                m_ShowPanel.BackColor = Convert.ToBoolean(m_colInData?[0]?.GetValue()) ? Color.Green : Color.Red;
+            }
+            catch
+            {
+                m_ShowPanel.BackColor = Color.Red;
+            }
 
             if (m_colInData != null) return;
             m_ShowPanel = null;
@@ -683,19 +769,78 @@ namespace GraphicProg
         }
     }
 
-    class CustomNode : ControlNode
+    class UpperSwitchNode : ControlNode
     {
-        private Panel m_WorkPanel;
-        private NodeController m_CNodeController;
-        private Button m_ExitButton;
-        private Button m_CreateLogicButton;
-
-        public CustomNode(CustomNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        public UpperSwitchNode(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
         {
         }
 
-        public CustomNode(Point posPoint, int id) : base(new Data.EType[0], new Data.EType[0], posPoint, "Custom Node", id)
+        public UpperSwitchNode(Point posPoint, int id) : base(new [] { Data.EType.UNIVERSAL, Data.EType.UNIVERSAL, Data.EType.BOOL }, new[] { Data.EType.UNIVERSAL}, posPoint, "Select", id)
         {
+        }
+
+        public override void Execute()
+        {
+            m_colOutData[0].SetValue(Convert.ToBoolean(m_colInData[2].GetValue()) ? m_colInData[0].GetValue() : m_colInData[1].GetValue());
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new UpperSwitchNode(this, posPoint, id);
+        }
+    }
+
+    class LowerSwitchNode : ControlNode
+    {
+        public LowerSwitchNode(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+        }
+
+        public LowerSwitchNode(Point posPoint, int id) : base(new[] { Data.EType.UNIVERSAL, Data.EType.BOOL }, new[] { Data.EType.UNIVERSAL, Data.EType.UNIVERSAL }, posPoint, "Branch", id)
+        {
+        }
+
+        public override void Execute()
+        {
+            m_colOutData[0].SetValue(Convert.ToBoolean(m_colInData[1].GetValue()) ? m_colInData[0].GetValue() : "");
+            m_colOutData[1].SetValue(Convert.ToBoolean(m_colInData[1].GetValue()) ? "" : m_colInData[0].GetValue());
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new LowerSwitchNode(this, posPoint, id);
+        }
+    }
+
+    class StringConstant : ControlNode
+    {
+        private TextBox m_Textbox;
+        public StringConstant(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+            m_Textbox = new TextBox();
+            m_Textbox.Location = new Point(m_BackPanel.Size.Width / 2 - m_Textbox.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_Textbox.Size.Height / 2);
+
+            m_Textbox.TextChanged += (sender, args) =>
+            {
+                m_colOutData[0].SetValue(m_Textbox.Text);
+            };
+
+            m_BackPanel.Controls.Add(m_Textbox);
+        }
+
+        public StringConstant(Point posPoint, int id) : base(new Data.EType[0], new []{Data.EType.STRING}, posPoint, "String constant", id)
+        {
+            m_Textbox = new TextBox();
+            m_Textbox.Location = new Point(m_BackPanel.Size.Width / 2 - m_Textbox.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_Textbox.Size.Height / 2);
+
+            m_Textbox.TextChanged += (sender, args) =>
+            {
+                m_colOutData[0].SetValue(m_Textbox.Text);
+            };
+
+            m_BackPanel.Controls.Add(m_Textbox);
         }
 
         public override void Execute()
@@ -705,7 +850,176 @@ namespace GraphicProg
 
         public override ControlNode Copy(Point posPoint, int id = -1)
         {
-            return new CustomNode(this, posPoint, id);
+            return new StringConstant(this, posPoint, id);
+        }
+    }
+
+    class BooleanConstant : ControlNode
+    {
+        private CheckBox m_CheckBox;
+        public BooleanConstant(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+            m_CheckBox = new CheckBox()
+            {
+                Text = @"True / False"
+            };
+            m_CheckBox.Location = new Point(m_BackPanel.Size.Width / 2 - m_CheckBox.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_CheckBox.Size.Height / 2);
+
+            m_BackPanel.Controls.Add(m_CheckBox);
+        }
+
+        public BooleanConstant(Point posPoint, int id) : base(new Data.EType[0], new[] { Data.EType.BOOL }, posPoint, "Boolean constant", id)
+        {
+        }
+
+        public override void Execute()
+        {
+            m_colOutData[0].SetValue(m_CheckBox.Checked);
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new BooleanConstant(this, posPoint, id);
+        }
+    }
+
+    class StringSum : ControlNode
+    {
+        public StringSum(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+        }
+
+        public StringSum(Point posPoint, int id) : base(new []{Data.EType.STRING, Data.EType.STRING}, new []{Data.EType.STRING}, posPoint, "String Sum", id)
+        {
+        }
+
+        public override void Execute()
+        {
+            m_colOutData[0].SetValue((string)m_colInData[0].GetValue() + (string)m_colInData[1].GetValue());
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new StringSum(this, posPoint, id);
+        }
+    }
+
+    class StringView : ControlNode
+    {
+        private TextBox m_Textbox;
+        private Timer m_Timer;
+        public StringView(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+            m_Textbox = new TextBox();
+            m_Textbox.Location = new Point(m_BackPanel.Size.Width / 2 - m_Textbox.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_Textbox.Size.Height / 2);
+            m_Timer = new Timer { Interval = 100 };
+            m_Timer.Tick += (sender, args) => Execute();
+            m_Timer.Start();
+
+            m_BackPanel.Controls.Add(m_Textbox);
+        }
+
+        public StringView(Point posPoint, int id) : base(new []{Data.EType.STRING}, new Data.EType[0], posPoint, "String View", id)
+        {
+            m_Textbox = new TextBox();
+            m_Textbox.Location = new Point(m_BackPanel.Size.Width / 2 - m_Textbox.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_Textbox.Size.Height / 2);
+
+            m_BackPanel.Controls.Add(m_Textbox);
+        }
+
+        public override void Execute()
+        {
+            m_Textbox.Text = m_colInData?[0]?.GetValue()?.ToString();
+
+            if (m_colInData != null) return;
+            m_Textbox = null;
+            m_Timer.Stop();
+            m_Timer = null;
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new StringView(this, posPoint, id);
+        }
+    }
+
+    class StringSize : ControlNode
+    {
+        public StringSize(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+        }
+
+        public StringSize (Point posPoint, int id) : base(new []{Data.EType.STRING}, new []{Data.EType.INT}, posPoint, "String size", id)
+        {
+        }
+
+        public override void Execute()
+        {
+            m_colOutData[0].SetValue(m_colInData[0].GetValue().ToString().Length);
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new StringSize(this, posPoint, id);
+        }
+    }
+
+    class LogicNode : ControlNode
+    {
+        private readonly ComboBox m_CompareSelector;
+
+        public LogicNode(ControlNode toCopy, Point posPoint, int id) : base(toCopy, posPoint, id)
+        {
+            m_CompareSelector = new ComboBox()
+            {
+                FlatStyle = FlatStyle.Flat,
+                Items = { "OR", "AND", "NOR", "NAND" }
+            };
+            m_CompareSelector.Location = new Point(m_BackPanel.Size.Width / 2 - m_CompareSelector.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_CompareSelector.Size.Height / 2);
+
+            m_BackPanel.Controls.Add(m_CompareSelector);
+        }
+
+        public LogicNode(Point posPoint, int id) : base(new[] { Data.EType.BOOL, Data.EType.BOOL }, new[] { Data.EType.BOOL }, posPoint, "Logic", id)
+        {
+            m_CompareSelector = new ComboBox()
+            {
+                FlatStyle = FlatStyle.Flat,
+                Items = { "OR", "AND", "NOR", "NAND"}
+            };
+            m_CompareSelector.Location = new Point(m_BackPanel.Size.Width / 2 - m_CompareSelector.Size.Width / 2,
+                m_BackPanel.Size.Height / 2 - m_CompareSelector.Size.Height / 2);
+
+            m_BackPanel.Controls.Add(m_CompareSelector);
+        }
+
+        public override void Execute()
+        {
+
+            switch (m_CompareSelector.SelectedIndex)
+            {
+                case 0:
+                    m_colOutData[0].SetValue(Convert.ToBoolean(m_colInData[0].GetValue()) || Convert.ToBoolean(m_colInData[1].GetValue()));
+                    break;
+                case 1:
+                    m_colOutData[0].SetValue(Convert.ToBoolean(m_colInData[0].GetValue()) && Convert.ToBoolean(m_colInData[1].GetValue()));
+                    break;
+                case 2:
+                    m_colOutData[0].SetValue(!(Convert.ToBoolean(m_colInData[0].GetValue()) || Convert.ToBoolean(m_colInData[1].GetValue())));
+                    break;
+                case 3:
+                    m_colOutData[0].SetValue(!(Convert.ToBoolean(m_colInData[0].GetValue()) && Convert.ToBoolean(m_colInData[1].GetValue())));
+                    break;
+            }
+        }
+
+        public override ControlNode Copy(Point posPoint, int id = -1)
+        {
+            return new LogicNode(this, posPoint, id);
         }
     }
 }

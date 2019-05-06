@@ -27,7 +27,7 @@ namespace GraphicProg
 
             MainForm.m_cActiveNodeController.m_BluePanel.Controls.Add(this);
 
-            m_TickGenerator = new Timer { Interval = 1000 / 60 };
+            m_TickGenerator = new Timer { Interval = 1000 / 20 };
             m_TickGenerator.Tick += (sender, args) => Update();
             m_TickGenerator.Start();
 
